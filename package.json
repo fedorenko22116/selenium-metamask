@@ -1,20 +1,18 @@
 {
-  "version": "1.0.0",
+  "version": "2.0.0-dev",
   "license": "MIT",
-  "main": "dist/selenium-metamask.esm.js",
+  "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
     "src"
   ],
-  "type": "module",
   "engines": {
-    "node": ">=10"
+    "node": ">=14"
   },
   "scripts": {
     "start": "tsdx watch",
-    "build": "tsdx build --target node --format esm",
-    "test": "tsdx test",
+    "build": "tsdx build",
     "lint": "tsdx lint",
     "prepare": "tsdx build",
     "size": "size-limit",

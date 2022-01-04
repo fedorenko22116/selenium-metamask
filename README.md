@@ -1,13 +1,13 @@
 # selenium-metamask
 
+WORK IN PROGRESS
+
 MetaMask wrapper for selenium chrome webdriver API
 
 ## Requirements
 
 * selenium ^4.1
 * chrome-webdriver ^4.1
-
-Works only as npm module
 
 ## Installation
 

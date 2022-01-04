@@ -2,7 +2,7 @@
   // see https://www.typescriptlang.org/tsconfig to better understand tsconfigs
   "include": ["src", "types"],
   "compilerOptions": {
-    "module": "node12",
+    "module": "esnext",
     "lib": ["esnext"],
     "importHelpers": true,
     // match output dir to input dir. e.g. dist/index instead of dist/src/index
