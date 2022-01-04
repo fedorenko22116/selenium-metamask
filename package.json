@@ -1,0 +1,60 @@
+{
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "dist/selenium-metamask.esm.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build --target node --format esm",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "name": "selenium-metamask",
+  "author": "Victor Fedorenko",
+  "module": "dist/selenium-metamask.esm.js",
+  "size-limit": [
+    {
+      "path": "dist/selenium-metamask.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/selenium-metamask.esm.js",
+      "limit": "10 KB"
+    }
+  ],
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^7.0.5",
+    "@types/selenium-webdriver": "^4.0.16",
+    "husky": "^7.0.4",
+    "size-limit": "^7.0.5",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.1.0"
+  }
+}
