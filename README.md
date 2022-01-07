@@ -1,7 +1,5 @@
 # selenium-metamask
 
-WORK IN PROGRESS
-
 MetaMask wrapper for selenium chrome webdriver API
 
 ## Requirements
@@ -15,15 +13,21 @@ MetaMask wrapper for selenium chrome webdriver API
 npm install selenium-metamask
 ```
 
+## Implemented actions
+
+* Authorization
+* Import account
+* Add network
+
 ## Usage
 
 ```ts
-import { Builder } from "selenium-webdriver"
-import { MetaMaskBuilder } from "selenium-metamask"
+import { Builder, until } from "selenium-webdriver"
+import { Options } from "selenium-webdriver/chrome"
+import { Loader, MetaMask } from "selenium-metamask"
 
 async function init() {
     const builder = new Builder()
-    const metaMaskBuilder = new MetaMaskBuilder(builder)
         .withCapabilities({
             'goog:chromeOptions': {
                 excludeSwitches: ['enable-automation', 'useAutomationExtension'],
@@ -31,10 +35,14 @@ async function init() {
         })
         .forBrowser('chrome')
         .usingServer('http://localhost:4444/')
-        .build()
+    const loader = new Loader(builder)
 
-    const metaMask = await metaMaskBuilder.login('seed phrase')
-    await metaMask.useNetwork({
+    loader.loadChromeExtension(new Options())
+
+    const driver = builder.build()
+    const metaMask = new MetaMask(driver, until)
+    const session = await metaMask.login('seed phrase')
+    await session.useNetwork({
         name: 'NetworkName',
         chainIdentifier: '123',
         explorerUrl: 'https://explorer.example.com',

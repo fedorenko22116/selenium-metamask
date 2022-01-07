@@ -1,15 +1,4 @@
-import { MetaMaskBuilder } from './builder';
-import {
-  MetaMask,
-  MetaMaskManager,
-  MetaMaskWebDriver,
-  Network,
-} from './driver';
+import { Loader } from './loader'
+import { MetaMask, MetaMaskSession, Network } from './driver'
 
-export {
-  MetaMaskBuilder,
-  Network,
-  MetaMask,
-  MetaMaskManager,
-  MetaMaskWebDriver,
-};
+export { Loader, Network, MetaMask, MetaMaskSession }
