@@ -1,11 +1,11 @@
 # selenium-metamask
 
-MetaMask wrapper for selenium chrome webdriver API
+MetaMask wrapper for selenium chrome/firefox webdriver API
 
 ## Requirements
 
 * selenium ^4.1
-* chrome-webdriver ^4.1
+* webdriver ^4.1
 
 ## Installation
 
