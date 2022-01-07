@@ -1,7 +1,7 @@
-import {By, Locator, WebDriver, WebElement, WebElementCondition} from 'selenium-webdriver'
+import { By, Locator, WebDriver, WebElement, WebElementCondition } from 'selenium-webdriver'
 
 export interface SeleniumKit {
-  elementLocated(locator: Locator): WebElementCondition,
+  elementLocated(locator: Locator): WebElementCondition
 }
 
 export interface Network {
@@ -26,9 +26,9 @@ class DriverHelper {
   }
 
   protected async waitForElements(
-      locator: Locator,
-      timeout: number = 3000,
-      message?: string
+    locator: Locator,
+    timeout: number = 3000,
+    message?: string
   ): Promise<Array<WebElement>> {
     await this.driver.wait(this.kit.elementLocated(locator), timeout, message)
 
@@ -61,9 +61,9 @@ export class MetaMaskSession extends DriverHelper {
     await this.openExtensionPage('#settings/networks/add-network')
 
     const inputs = await this.waitForElements(
-        By.className('form-field__input'),
-        3000,
-        'Failed to open extension page /add-network path'
+      By.className('form-field__input'),
+      3000,
+      'Failed to open extension page /add-network path'
     )
 
     await inputs[0].sendKeys(network.name)
@@ -93,9 +93,9 @@ export class MetaMask extends DriverHelper {
     await this.openExtensionPage()
 
     await this.waitAndClick(
-        By.xpath("//button[contains(text(),'Get Started')]"),
-        3000,
-        'Extension page is not loaded or session already started'
+      By.xpath("//button[contains(text(),'Get Started')]"),
+      3000,
+      'Extension page is not loaded or session already started'
     )
     await this.waitAndClick(By.xpath("//button[contains(text(),'Import wallet')]"))
     await this.waitAndClick(By.xpath("//button[contains(text(),'I Agree')]"))
