@@ -24,7 +24,7 @@ async function initialize() {
 
     console.log('Use Network')
 
-    await session.useNetwork({
+    await session.addNetwork({
         name: 'Polygon',
         chainIdentifier: '137',
         explorerUrl: 'https://polygonscan.com/',
@@ -34,7 +34,21 @@ async function initialize() {
 
     console.log('Import Account')
 
-    await session.importAccount('a99c4e083277f33db87cc21eb2cee61ef7174f801b867df72b8ffd227bf54e29')
+    const importedAccount = await session.importAccount('a99c4e083277f33db87cc21eb2cee61ef7174f801b867df72b8ffd227bf54e29')
+
+    console.log('Create Account')
+
+    await session.createAccount('Test Account')
+
+    console.log('Switch Network')
+
+    await session.switchNetwork(session.networks[0])
+
+    console.log('Switch Account')
+
+    await session.switchAccount(importedAccount)
+
+    console.log('Done')
 }
 
 initialize()

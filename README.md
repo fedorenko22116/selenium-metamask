@@ -1,7 +1,8 @@
 # selenium-metamask
 
 MetaMask wrapper for selenium webdriver API
-(Chrome support only)
+
+(Chrome/Firefox supported only)
 
 ## Requirements
 
@@ -17,8 +18,11 @@ npm install selenium-metamask
 ## Implemented actions
 
 * Authorization
-* Import account
-* Add network
+* Importing account
+* Creation account
+* Switching account
+* Adding network
+* Switching network
 
 ## Usage
 
@@ -43,14 +47,16 @@ async function init() {
     const driver = builder.build()
     const metaMask = new MetaMask(driver, until)
     const session = await metaMask.login('seed phrase')
-    await session.useNetwork({
+    await session.addNetwork({
         name: 'NetworkName',
         chainIdentifier: '123',
         explorerUrl: 'https://explorer.example.com',
         rpcUrl: 'https://rpc.example.com',
         symbol: 'EXAMPLE',
     })
-    await metaMask.importAccount('private key')
+    await session.importAccount('private key')
+    await session.switchNetwork(session.networks[0])
+    await session.switchAccount(session.accounts[0])
 
     // Other tests
 }

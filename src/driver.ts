@@ -1,4 +1,4 @@
-import { By, Locator, WebDriver, WebElement, WebElementCondition } from 'selenium-webdriver'
+import { By, Locator, WebDriver, WebElement, WebElementCondition, until } from 'selenium-webdriver'
 
 export interface SeleniumKit {
   elementLocated(locator: Locator): WebElementCondition
@@ -12,14 +12,38 @@ export interface Network {
   explorerUrl?: string
 }
 
+export interface Account {
+  name: string
+  imported: boolean
+}
+
 class DriverHelper {
-  public constructor(protected driver: WebDriver, protected kit: SeleniumKit) {}
+  /**
+   * @param driver
+   * @param kit Until set from original library
+   * @param defaultTimeout Timeout for all await actions
+   */
+  public constructor(
+    protected driver: WebDriver,
+    protected kit: SeleniumKit = until,
+    protected defaultTimeout: number = 3000
+  ) {}
 
   protected async openExtensionPage(path: string = ''): Promise<void> {
-    await this.driver.get('chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/home.html' + path)
+    const browserName = (await this.driver.getCapabilities()).getBrowserName() || ''
+
+    if (browserName.toLowerCase().includes('firefox')) {
+      await this.driver.get('moz-extension://85ca8b6b-c5b4-4006-90d8-d47cd8ab7121/home.html')
+    } else {
+      await this.driver.get('chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/home.html' + path)
+    }
   }
 
-  protected async waitForElement(locator: Locator, timeout: number = 3000, message?: string): Promise<WebElement> {
+  protected async waitForElement(
+    locator: Locator,
+    timeout: number = this.defaultTimeout,
+    message?: string
+  ): Promise<WebElement> {
     await this.driver.wait(this.kit.elementLocated(locator), timeout, message)
 
     return this.driver.findElement(locator)
@@ -35,7 +59,11 @@ class DriverHelper {
     return this.driver.findElements(locator)
   }
 
-  protected async waitAndClick(locator: Locator, timeout: number = 3000, message?: string): Promise<void> {
+  protected async waitAndClick(
+    locator: Locator,
+    timeout: number = this.defaultTimeout,
+    message?: string
+  ): Promise<void> {
     const element = await this.waitForElement(locator, timeout, message)
 
     while (true) {
@@ -49,15 +77,64 @@ class DriverHelper {
 }
 
 export class MetaMaskSession extends DriverHelper {
-  public async importAccount(privateKey: string): Promise<void> {
+  public accounts: Array<Account> = [{ name: 'Account 1', imported: false }]
+
+  public networks: Array<Network> = [
+    {
+      name: 'Ethereum Mainnet',
+      rpcUrl: 'https://main-light.eth.linkpool.io/',
+      chainIdentifier: '1',
+      symbol: 'ETH',
+      explorerUrl: 'https://etherscan.io/',
+    },
+  ]
+
+  public async importAccount(privateKey: string): Promise<Account> {
     await this.openExtensionPage()
-    await this.waitAndClick(By.className('account-menu__icon'), 3000, 'Failed to import account')
+    await this.waitAndClick(By.className('account-menu__icon'), this.defaultTimeout, 'Failed to import account')
     await this.waitAndClick(By.xpath("//img[@src='images/import-account.svg']"))
     await this.waitForElement(By.className('new-account-import-form__input-password')).then(e => e.sendKeys(privateKey))
     await this.waitAndClick(By.xpath("//button[contains(text(),'Import')]"))
+
+    await this.driver.sleep(2000)
+
+    const accountName = await this.waitForElement(By.className('selected-account__name')).then(e => e.getText())
+    this.accounts.push({ name: accountName, imported: true })
+
+    return this.accounts[this.accounts.length - 1]
   }
 
-  public async useNetwork(network: Network): Promise<void> {
+  public async createAccount(name: string): Promise<Account> {
+    await this.openExtensionPage()
+    await this.waitAndClick(By.className('account-menu__icon'), this.defaultTimeout, 'Failed to create account')
+    await this.waitAndClick(By.xpath("//img[@src='images/plus-btn-white.svg']"))
+    await this.waitForElement(By.className('new-account-create-form__input')).then(e => e.sendKeys(name))
+    await this.waitAndClick(By.xpath("//button[contains(text(),'Create')]"))
+
+    await this.driver.sleep(2000)
+
+    this.accounts.push({ name, imported: false })
+
+    return this.accounts[this.accounts.length - 1]
+  }
+
+  public async switchAccount(account: Account): Promise<void> {
+    await this.openExtensionPage()
+    await this.waitAndClick(By.className('account-menu__icon'), this.defaultTimeout, 'Failed to switch account')
+    const accountElements = await this.waitForElements(By.className('account-menu__name'))
+
+    for (let accountElement of accountElements) {
+      if ((await accountElement.getText()) === account.name) {
+        await accountElement.click()
+        await this.driver.sleep(1000)
+        return
+      }
+    }
+
+    throw new Error(`Undefined account '${account.name}'`)
+  }
+
+  public async addNetwork(network: Network): Promise<void> {
     await this.openExtensionPage('#settings/networks/add-network')
 
     const inputs = await this.waitForElements(
@@ -80,6 +157,25 @@ export class MetaMaskSession extends DriverHelper {
 
     await this.waitAndClick(By.xpath("//button[contains(text(),'Save')]"))
     await this.driver.sleep(1000)
+
+    this.networks.push(network)
+  }
+
+  public async switchNetwork(network: Network): Promise<void> {
+    await this.openExtensionPage()
+    await this.waitAndClick(By.className('network-display'))
+
+    const networksElements = await this.waitForElements(By.className('network-name-item'))
+
+    for (let networkElement of networksElements) {
+      if ((await networkElement.getText()) === network.name) {
+        await networkElement.click()
+        await this.driver.sleep(1000)
+        return
+      }
+    }
+
+    throw new Error(`Undefined network '${network.name}'`)
   }
 }
 
@@ -117,6 +213,6 @@ export class MetaMask extends DriverHelper {
       'Failed to fetch MetaMask network data'
     ).then(e => e.click())
 
-    return new MetaMaskSession(this.driver, this.kit)
+    return new MetaMaskSession(this.driver, this.kit, this.defaultTimeout)
   }
 }
