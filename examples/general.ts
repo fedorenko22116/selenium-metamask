@@ -1,6 +1,6 @@
-import { Builder, until } from "selenium-webdriver"
-import { Options } from "selenium-webdriver/chrome"
-import { Loader, MetaMask } from "../dist"
+const { Builder, until } = require("selenium-webdriver")
+const { Options } = require("selenium-webdriver/chrome")
+const { Loader, MetaMask } = require("../dist")
 
 async function initialize() {
     const builder = new Builder()

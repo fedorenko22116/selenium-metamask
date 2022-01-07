@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
+  "version": "3.0.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -7,7 +7,8 @@
   "type": "commonjs",
   "files": [
     "dist",
-    "src"
+    "src",
+    "resources"
   ],
   "scripts": {
     "start": "tsdx watch",

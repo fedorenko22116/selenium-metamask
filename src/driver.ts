@@ -96,12 +96,18 @@ export class MetaMaskSession extends DriverHelper {
     await this.waitForElement(By.className('new-account-import-form__input-password')).then(e => e.sendKeys(privateKey))
     await this.waitAndClick(By.xpath("//button[contains(text(),'Import')]"))
 
-    await this.driver.sleep(2000)
-
     const accountName = await this.waitForElement(By.className('selected-account__name')).then(e => e.getText())
     this.accounts.push({ name: accountName, imported: true })
 
     return this.accounts[this.accounts.length - 1]
+  }
+
+  public async getAccountAddress(): Promise<string> {
+    await this.openExtensionPage()
+    await this.waitAndClick(By.xpath("//button[@data-testid='account-options-menu-button']"))
+    await this.waitAndClick(By.xpath("//button[@data-testid='account-options-menu__account-details']"))
+
+    return await this.waitForElement(By.className('qr-code__address')).then(e => e.getText())
   }
 
   public async createAccount(name: string): Promise<Account> {
@@ -111,9 +117,9 @@ export class MetaMaskSession extends DriverHelper {
     await this.waitForElement(By.className('new-account-create-form__input')).then(e => e.sendKeys(name))
     await this.waitAndClick(By.xpath("//button[contains(text(),'Create')]"))
 
-    await this.driver.sleep(2000)
+    const accountName = await this.waitForElement(By.className('selected-account__name')).then(e => e.getText())
 
-    this.accounts.push({ name, imported: false })
+    this.accounts.push({ name: accountName, imported: false })
 
     return this.accounts[this.accounts.length - 1]
   }
@@ -139,7 +145,7 @@ export class MetaMaskSession extends DriverHelper {
 
     const inputs = await this.waitForElements(
       By.className('form-field__input'),
-      3000,
+      this.defaultTimeout,
       'Failed to open extension page /add-network path'
     )
 
@@ -170,7 +176,7 @@ export class MetaMaskSession extends DriverHelper {
     for (let networkElement of networksElements) {
       if ((await networkElement.getText()) === network.name) {
         await networkElement.click()
-        await this.driver.sleep(1000)
+        await this.driver.sleep(2000)
         return
       }
     }
@@ -190,7 +196,7 @@ export class MetaMask extends DriverHelper {
 
     await this.waitAndClick(
       By.xpath("//button[contains(text(),'Get Started')]"),
-      3000,
+      this.defaultTimeout,
       'Extension page is not loaded or session already started'
     )
     await this.waitAndClick(By.xpath("//button[contains(text(),'Import wallet')]"))
@@ -209,7 +215,7 @@ export class MetaMask extends DriverHelper {
 
     await this.waitForElement(
       By.xpath("//button[contains(text(),'All Done')]"),
-      3000,
+      this.defaultTimeout,
       'Failed to fetch MetaMask network data'
     ).then(e => e.click())
 

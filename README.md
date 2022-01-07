@@ -23,6 +23,7 @@ npm install selenium-metamask
 * Switching account
 * Adding network
 * Switching network
+* Getting account address
 
 ## Usage
 
@@ -55,8 +56,6 @@ async function init() {
         symbol: 'EXAMPLE',
     })
     await session.importAccount('private key')
-    await session.switchNetwork(session.networks[0])
-    await session.switchAccount(session.accounts[0])
 
     // Other tests
 }
