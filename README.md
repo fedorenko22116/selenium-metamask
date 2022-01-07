@@ -1,6 +1,7 @@
 # selenium-metamask
 
-MetaMask wrapper for selenium chrome/firefox webdriver API
+MetaMask wrapper for selenium webdriver API
+(Chrome support only)
 
 ## Requirements
 
